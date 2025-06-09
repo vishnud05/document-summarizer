@@ -6,7 +6,6 @@ from typing import Dict, Type, List
 from .base_summarizer import BaseSummarizer
 from .basic_prompt_summarizer import BasicPromptSummarizer
 from .template_driven_summarizer import TemplateDrivenSummarizer
-from .structured_document_summarizer import StructuredDocumentSummarizer
 from .map_reduce_summarizer import MapReduceSummarizer
 from .refinement_based_summarizer import RefinementBasedSummarizer
 
@@ -20,7 +19,6 @@ class Summarizer:
     _summarizer_classes: Dict[str, Type[BaseSummarizer]] = {
         'basic_prompt': BasicPromptSummarizer,
         'template_driven': TemplateDrivenSummarizer,
-        'structured_document': StructuredDocumentSummarizer,
         'map_reduce': MapReduceSummarizer,
         'refinement_based': RefinementBasedSummarizer,
     }
