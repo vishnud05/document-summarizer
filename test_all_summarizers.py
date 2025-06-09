@@ -8,6 +8,7 @@ import os
 from summarizers.basic_prompt_summarizer import BasicPromptSummarizer
 from summarizers.template_driven_summarizer import TemplateDrivenSummarizer
 from summarizers.map_reduce_summarizer import MapReduceSummarizer
+from summarizers.refinement_based_summarizer import RefinementBasedSummarizer
 import sys
 import pathlib
 from PyPDF2 import PdfReader
@@ -150,6 +151,54 @@ def test_map_reduce_summarizer():
         return False, None
 
 
+def test_refinement_based_summarizer():
+    """Test the RefinementBasedSummarizer with new architecture."""
+    print("\n🔄 Testing Refinement-Based Summarizer...")
+    print("-" * 50)
+    
+    try:
+        # Initialize summarizer with token-based chunking
+        refinement_summarizer = RefinementBasedSummarizer(
+            model_name="llama3-8b-8192",
+            max_input_tokens=4000,  # Use token-based chunking
+            chunk_overlap=150,      # Token overlap
+            temperature=0.3,        # Moderate temperature for refinement
+            max_tokens=600
+        )
+        
+        # Get test document
+        sample_document = get_sample_document()
+        
+        # Run summarization
+        result = refinement_summarizer(sample_document)
+        
+        # Display results
+        print("✅ Refinement-Based Summarizer - SUCCESS")
+        print(f"📊 Summary Length: {len(result['summary'])} characters")
+        print(f"💰 Cost: ${result['metadata']['cost']:.4f}")
+        print(f"🎯 Technique: {result['metadata']['technique']}")
+        print(f"🔢 Input Tokens: {result['metadata']['input_tokens']}")
+        print(f"🔢 Output Tokens: {result['metadata']['output_tokens']}")
+        print(f"🧩 Number of Chunks: {result['metadata']['num_chunks']}")
+        print(f"📏 Max Input Tokens: {result['metadata']['max_input_tokens']}")
+        print(f"🎯 Initial Chunk Size: {result['metadata']['initial_chunk_size']} tokens")
+        print(f"🔄 Token Overlap: {result['metadata']['chunk_overlap']}")
+        print(f"🔄 Refinement Iterations: {result['metadata']['refinement_iterations']}")
+        print(f"🪙 Chunking Method: {result['metadata']['chunking_method']}")
+        print(f"🎯 Refinement Approach: {result['metadata']['refinement_approach']}")
+        print(f"⏱️  Processing Time: {result['metadata']['processing_time_seconds']:.2f}s")
+        print("-" * 40)
+        print("Summary:")
+        print(result["summary"])
+        print()
+        
+        return True, result
+        
+    except Exception as e:
+        print(f"❌ Refinement-Based Summarizer - FAILED: {e}")
+        return False, None
+
+
 def test_all_summarizers():
     """Run all summarizer tests and display comprehensive results."""
     print("🌍 Testing All Summarizers with Refactored Architecture")
@@ -167,6 +216,9 @@ def test_all_summarizers():
     
     map_reduce_success, map_reduce_result = test_map_reduce_summarizer()
     test_results.append(("Map-Reduce Summarizer", map_reduce_success, map_reduce_result))
+    
+    refinement_success, refinement_result = test_refinement_based_summarizer()
+    test_results.append(("Refinement-Based Summarizer", refinement_success, refinement_result))
     
     # Display comprehensive summary
     print("\n" + "=" * 80)
@@ -216,7 +268,8 @@ def run_individual_test(test_name: str):
     test_functions = {
         "basic": test_basic_prompt_summarizer,
         "template": test_template_driven_summarizer,  
-        "map-reduce": test_map_reduce_summarizer
+        "map-reduce": test_map_reduce_summarizer,
+        "refinement": test_refinement_based_summarizer
     }
     
     if test_name.lower() in test_functions:
@@ -231,7 +284,7 @@ def run_individual_test(test_name: str):
         return success
     else:
         print(f"❌ Unknown test: {test_name}")
-        print("Available tests: basic, template, map-reduce")
+        print("Available tests: basic, template, map-reduce, refinement")
         return False
 
 
