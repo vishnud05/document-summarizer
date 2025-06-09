@@ -16,7 +16,7 @@ class Summarizer:
     Factory class for creating and managing summarizer instances.
     """
     
-    # Registry of available summarizer types
+    
     _summarizer_classes: Dict[str, Type[BaseSummarizer]] = {
         'basic_prompt': BasicPromptSummarizer,
         'template_driven': TemplateDrivenSummarizer,
@@ -60,7 +60,6 @@ class Summarizer:
         """
         result = []
         for key, summarizer_class in cls._summarizer_classes.items():
-            # Create a temporary instance to get the description
             instance = summarizer_class()
             result.append({
                 'id': key,

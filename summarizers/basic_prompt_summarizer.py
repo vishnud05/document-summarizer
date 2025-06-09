@@ -67,63 +67,24 @@ class BasicPromptSummarizer(BaseSummarizer):
         Returns:
             Dictionary with summary and metadata
         """
-        print(f"🚀 Starting Basic Prompt Summarization...")
-        print(f"📄 Document length: {len(input_text)} characters")
-        
-        # Use the prompt template to format the input
         prompt = kwargs.get("prompt")
         if prompt is not None:
-            if isinstance(prompt, PromptTemplate):
-                prompt_template = prompt
-            else:
-                prompt_template = PromptTemplate.from_template(prompt)
+            prompt_template = prompt
         else:
-            prompt_template = """ Summarize the following \nText:{text}"""
-            
+            prompt_template = PromptTemplate.from_template("Summarize the following text:\n{text}")
         input_prompt = prompt_template.format(text=input_text)
-        
-        
-        # Prepare messages for the LLM
         messages = [
-            {
-                "role": "system",
-                "content": self.SYSTEM_PROMPT      
-            },
-            {
-                "role": "user",
-                "content": input_prompt
-            }
+            {"role": "system", "content": self.SYSTEM_PROMPT},
+            {"role": "user", "content": input_prompt}
         ]
-          # Make API call using centralized client
         try:
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=cast(list, messages),
-                **self.model_params
-            )
-            
-            # Extract summary from response
+            response = self.client.chat.completions.create(model=self.model_name, messages=cast(list, messages), temperature=self.model_params["temperature"], max_tokens=self.model_params["max_tokens"])
             summary = response.choices[0].message.content
             if summary is None:
                 summary = ""
-                
+            else:
+                summary = summary.strip()
         except Exception as e:
-            print(f"❌ Error during API call: {e}")
-            summary = f"Error generating summary: {str(e)}"
-        
-        print(f"✅ Basic prompt summary generated")
-        
-        # Calculate metrics
+            summary = f"Error: {e}"
         metrics = self.calculate_metrics(input_text, summary)
-        
-        # Enhanced metadata
-        metadata = {
-            "has_custom_template": prompt_template is not None,
-            **metrics
-        }
-        
-        return {
-            "summary": summary,
-            "metadata": metadata
-        }
-        
+        return {"summary": summary, "metadata": metrics}

@@ -79,18 +79,12 @@ class TemplateDrivenSummarizer(BaseSummarizer):
         Returns:
             Dictionary with summary and metadata
         """
-        print(f"🚀 Starting Template-Driven Summarization...")
-        print(f"📄 Document length: {len(input_text)} characters")
-        
-        # Allow user to override the template
         template = kwargs.get("prompt_template", self.DEFAULT_TEMPLATE)
         if not isinstance(template, PromptTemplate):
             prompt_template = PromptTemplate.from_template(template)
         else:
             prompt_template = template
         prompt_text = prompt_template.format(text=input_text)
-        
-        # Prepare messages for the LLM
         messages = [
             {
                 "role": "system",
@@ -101,36 +95,23 @@ class TemplateDrivenSummarizer(BaseSummarizer):
                 "content": prompt_text
             }
         ]
-          # Make API call using centralized client
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=cast(list, messages),
-                **self.model_params
+                temperature=self.model_params["temperature"],
+                max_tokens=self.model_params["max_tokens"]
             )
-            
-            # Extract summary from response
             summary = response.choices[0].message.content
             if summary is None:
                 summary = ""
-                
+            else:
+                summary = summary.strip()
         except Exception as e:
-            print(f"❌ Error during API call: {e}")
-            summary = f"Error generating summary: {str(e)}"
-        
-        print(f"✅ Template-driven summary generated")
-        
-        # Calculate metrics
+            summary = f"Error: {e}"
         metrics = self.calculate_metrics(input_text, summary)
-        
-        # Enhanced metadata
-        metadata = {
-            "has_custom_template": kwargs.get("prompt_template") is not None,
-            **metrics
-        }
-        
         return {
             "summary": summary,
-            "metadata": metadata
+            "metadata": metrics
         }
 

@@ -10,3 +10,6 @@ PyPDF2
 protobuf
 tiktoken
 groq
+streamlit
+python-docx
+pandas
