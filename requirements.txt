@@ -1,0 +1,12 @@
+langchain>=0.1.0
+langchain-core>=0.1.17
+langchain_huggingface>=0.0.2
+langchain-text-splitters>=0.0.1
+langsmith>=0.0.85
+transformers>=4.30.0
+requests
+python-dotenv
+PyPDF2
+protobuf
+tiktoken
+groq
