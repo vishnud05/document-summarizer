@@ -4,7 +4,7 @@ This summarizer uses LangChain with Hugging Face Inference API for summarization
 Integrated with LangSmith for tracing and evaluation.
 """
 
-from typing import Dict, Any, Optional, cast
+from typing import Optional, cast
 from langchain_core.prompts import PromptTemplate
 from langsmith import traceable
 from .base_summarizer import BaseSummarizer
