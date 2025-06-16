@@ -14,7 +14,7 @@ class BaseSummarizer(ABC):
                  temperature: float = 0.7,
                  max_tokens: int = 500,
                  **kwargs):
-        self.model_name = "meta/llama-4-maverick-17b-128e-instruct" or model_name
+        self.model_name = "gemini-2.0-flash" or model_name
         self.name = self.__class__.__name__
         
         self.model_params = {
@@ -23,11 +23,12 @@ class BaseSummarizer(ABC):
             **kwargs
         }
         
-        api_key = api_key or os.getenv('NVIDIA_API_KEY')
-        base_url = base_url or "https://integrate.api.nvidia.com/v1"
+        api_key = os.getenv('GEMINI_API_KEY')
+        print(api_key)
+        base_url = base_url or "https://generativelanguage.googleapis.com/v1beta/openai/"
         
         if not api_key:
-            raise ValueError("GROQ_API_KEY not set.")
+            raise ValueError("API KEY not set.")
         
         self.client = wrappers.wrap_openai(OpenAI(
             api_key=api_key,
